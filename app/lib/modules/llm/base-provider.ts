@@ -182,7 +182,36 @@ export function getOpenAILikeModel(baseURL: string, apiKey: OptionalApiKey, mode
   return openai(model);
 }
 
-export function getOpenAICompatibleModel(baseURL: string, apiKey: OptionalApiKey, model: string) {
+/*
+ * Wrap fetch so we can log Zen API failures (status, url) in the server logs.
+ * This helps diagnose environment-specific issues (e.g. Vercel egress).
+ */
+function createZenFetch(providerName: string) {
+  return async (input: any, init?: any) => {
+    const url = typeof input === 'string' ? input : input?.url;
+
+    try {
+      const response = await fetch(input, init);
+
+      if (!response.ok) {
+        const body = await response.text().catch(() => '');
+        console.error(`[${providerName}] Zen API error ${response.status} for ${url}: ${body.slice(0, 300)}`);
+      }
+
+      return response;
+    } catch (error: any) {
+      console.error(`[${providerName}] Zen API request failed for ${url}: ${error?.message || error}`);
+      throw error;
+    }
+  };
+}
+
+export function getOpenAICompatibleModel(
+  baseURL: string,
+  apiKey: OptionalApiKey,
+  model: string,
+  providerName = 'opencode-zen',
+) {
   const provider = createOpenAICompatible({
     name: 'opencode-zen',
     baseURL,
@@ -194,6 +223,7 @@ export function getOpenAICompatibleModel(baseURL: string, apiKey: OptionalApiKey
      */
     apiKey: apiKey ? ' ' : undefined,
     headers: apiKey ? { Authorization: apiKey } : undefined,
+    fetch: createZenFetch(providerName),
   });
 
   return provider(model);

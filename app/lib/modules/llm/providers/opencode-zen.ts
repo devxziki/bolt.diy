@@ -72,8 +72,8 @@ export default class OpenCodeZenProvider extends BaseProvider {
       throw new Error(`Missing API key for ${this.name} provider`);
     }
 
-    const resolvedBaseUrl = (baseUrl || ZEN_BASE_URL).replace(/\/chat\/completions$/, '');
+    const resolvedBaseUrl = (baseUrl || ZEN_BASE_URL).replace('/chat/completions', '');
 
-    return getOpenAICompatibleModel(resolvedBaseUrl, apiKey, model);
+    return getOpenAICompatibleModel(resolvedBaseUrl, apiKey, model, this.name);
   }
 }

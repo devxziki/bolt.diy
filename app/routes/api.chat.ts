@@ -348,7 +348,10 @@ async function chatAction({ context, request }: ActionFunctionArgs) {
       },
       onError: (error: any) => {
         // Provide more specific error messages for common issues
-        const errorMessage = error.message || 'Unknown error';
+        const errorMessage = error?.message || 'Unknown error';
+        const causeMessage = error?.cause?.message || error?.cause?.toString() || '';
+
+        logger.error('Chat stream error:', errorMessage, '| cause:', causeMessage);
 
         if (errorMessage.includes('model') && errorMessage.includes('not found')) {
           return 'Custom error: Invalid model selected. Please check that the model name is correct and available.';
@@ -378,7 +381,10 @@ async function chatAction({ context, request }: ActionFunctionArgs) {
           return 'Custom error: Network error. Please check your internet connection and try again.';
         }
 
-        return `Custom error: ${errorMessage}`;
+        // Surface the underlying cause so the real failure is visible
+        const detail = causeMessage ? `${errorMessage} (cause: ${causeMessage})` : errorMessage;
+
+        return `Custom error: ${detail}`;
       },
     }).pipeThrough(
       new TransformStream({

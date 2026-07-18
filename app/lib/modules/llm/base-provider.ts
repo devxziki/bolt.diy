@@ -4,6 +4,7 @@ import type { IProviderSetting } from '~/types/model';
 import { createOpenAI } from '@ai-sdk/openai';
 import { createOpenAICompatible } from '@ai-sdk/openai-compatible';
 import { LLMManager } from './manager';
+import { Readable } from 'node:stream';
 
 /** Default timeout for model listing API calls (5 seconds) */
 const MODEL_FETCH_TIMEOUT = 5_000;
@@ -196,6 +197,26 @@ function createZenFetch(providerName: string) {
       if (!response.ok) {
         const body = await response.text().catch(() => '');
         console.error(`[${providerName}] Zen API error ${response.status} for ${url}: ${body.slice(0, 300)}`);
+      }
+
+      /*
+       * On some Node runtimes (e.g. Vercel's serverless functions on Node 18/20/22)
+       * the global `fetch` can yield a Node.js `stream.Readable` as `response.body`
+       * instead of a WHATWG `ReadableStream`. A Node Readable exposes a `readable`
+       * boolean member, so when the AI SDK later calls `new Response(response.body)`
+       * (or `response.body.pipeThrough(...)`) the runtime throws:
+       *   "First parameter has member 'readable' that is not a ReadableStream"
+       * Normalise the body to a genuine Web `ReadableStream` before any downstream
+       * consumer touches it, preserving the streaming behaviour.
+       */
+      if (
+        response.body &&
+        !(response.body instanceof ReadableStream) &&
+        typeof (response.body as any).pipe === 'function'
+      ) {
+        const webBody = Readable.toWeb(response.body as Readable);
+
+        return new Response(webBody as ReadableStream, response);
       }
 
       return response;

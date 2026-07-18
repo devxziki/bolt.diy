@@ -3,12 +3,6 @@
   "buildCommand": "npm run build",
   "outputDirectory": "build/client",
   "installCommand": "pnpm install --frozen-lockfile",
-  "functions": {
-    "api/[...index].ts": {
-      "maxDuration": 60,
-      "includeFiles": "build/server/**,node_modules/.bin/**"
-    }
-  },
   "headers": [
     {
       "source": "/(.*)",

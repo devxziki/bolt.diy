@@ -4,6 +4,7 @@ import * as build from '../build/server/index.js';
 export const config = {
   runtime: 'nodejs',
   maxDuration: 60,
+  memory: 1024,
 };
 
 /* The Remix Vite server build exports the ServerBuild as a namespace object. */

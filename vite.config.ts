@@ -16,6 +16,16 @@ export default defineConfig((config) => {
     define: {
       'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
     },
+    resolve: {
+      // On the Node.js runtime, `react-dom/server` resolves to the Node build which
+      // does not export `renderToReadableStream`. The custom entry.server uses the
+      // Web Stream API to stream the HTML response, so we alias it to the browser
+      // build which provides `renderToReadableStream`. This is required for
+      // deployments on Node-based platforms such as Vercel.
+      alias: {
+        'react-dom/server': 'react-dom/server.browser',
+      },
+    },
     build: {
       target: 'esnext',
     },

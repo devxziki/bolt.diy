@@ -38,8 +38,8 @@ export default [
     },
   },
   {
-    files: [...tsFileExtensions, ...jsFileExtensions, '**/*.tsx'],
-    ignores: ['functions/*', 'electron/**/*'],
+      files: [...tsFileExtensions, ...jsFileExtensions, '**/*.tsx'],
+      ignores: ['functions/*', 'electron/**/*', 'api/**/*'],
     rules: {
       'no-restricted-imports': [
         'error',

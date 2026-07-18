@@ -4,7 +4,6 @@ import type { IProviderSetting } from '~/types/model';
 import { createOpenAI } from '@ai-sdk/openai';
 import { createOpenAICompatible } from '@ai-sdk/openai-compatible';
 import { LLMManager } from './manager';
-import { Readable } from 'node:stream';
 
 /** Default timeout for model listing API calls (5 seconds) */
 const MODEL_FETCH_TIMEOUT = 5_000;
@@ -203,20 +202,42 @@ function createZenFetch(providerName: string) {
        * On some Node runtimes (e.g. Vercel's serverless functions on Node 18/20/22)
        * the global `fetch` can yield a Node.js `stream.Readable` as `response.body`
        * instead of a WHATWG `ReadableStream`. A Node Readable exposes a `readable`
-       * boolean member, so when the AI SDK later calls `new Response(response.body)`
-       * (or `response.body.pipeThrough(...)`) the runtime throws:
+       * boolean member, so when the AI SDK later calls `response.body.pipeThrough(...)`
+       * the runtime throws:
        *   "First parameter has member 'readable' that is not a ReadableStream"
        * Normalise the body to a genuine Web `ReadableStream` before any downstream
        * consumer touches it, preserving the streaming behaviour.
+       *
+       * We build the Web stream from the GLOBAL `ReadableStream` class (not via an
+       * imported `node:stream` `Readable.toWeb`, which vite-plugin-node-polyfills can
+       * shadow with `stream-browserify`). This uses the Node Readable's async
+       * iteration and is therefore polyfill-agnostic.
        */
       if (
         response.body &&
         !(response.body instanceof ReadableStream) &&
         typeof (response.body as any).pipe === 'function'
       ) {
-        const webBody = Readable.toWeb(response.body as Readable);
+        const nodeBody = response.body as AsyncIterable<Uint8Array | string> & {
+          destroy?: () => void;
+        };
+        const webBody = new ReadableStream<Uint8Array>({
+          async start(controller) {
+            try {
+              for await (const chunk of nodeBody) {
+                controller.enqueue(typeof chunk === 'string' ? new TextEncoder().encode(chunk) : chunk);
+              }
+              controller.close();
+            } catch (err) {
+              controller.error(err);
+            }
+          },
+          cancel() {
+            nodeBody.destroy?.();
+          },
+        });
 
-        return new Response(webBody as ReadableStream, response);
+        return new Response(webBody, response);
       }
 
       return response;

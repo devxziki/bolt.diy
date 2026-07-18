@@ -1,4 +1,10 @@
-import { Readable } from 'node:stream';
+/*
+ * NOTE: We intentionally do NOT import from `node:stream`. vite-plugin-node-polyfills
+ * can shadow `node:stream` with `stream-browserify` (whose `Readable` lacks `toWeb`),
+ * which made the earlier fix a no-op. Instead we build the Web `ReadableStream` from
+ * the global `ReadableStream` class using the Node stream's async iteration, so the
+ * conversion is polyfill-agnostic and always produces a genuine WHATWG ReadableStream.
+ */
 
 /**
  * Ensure a value is a genuine WHATWG ReadableStream.
@@ -29,10 +35,26 @@ export function ensureWebReadableStream(stream: unknown, providerName = 'unknown
   }
 
   // Node.js Readable (has a `readable` boolean member and a `pipe` method).
-  const maybeNode = stream as { pipe?: unknown };
+  const maybeNode = stream as { pipe?: unknown } & AsyncIterable<Uint8Array | string> & {
+      destroy?: () => void;
+    };
 
   if (maybeNode && typeof maybeNode.pipe === 'function') {
-    const webStream = Readable.toWeb(stream as Readable);
+    const webStream = new ReadableStream<Uint8Array>({
+      async start(controller) {
+        try {
+          for await (const chunk of maybeNode) {
+            controller.enqueue(typeof chunk === 'string' ? new TextEncoder().encode(chunk) : chunk);
+          }
+          controller.close();
+        } catch (err) {
+          controller.error(err);
+        }
+      },
+      cancel() {
+        maybeNode.destroy?.();
+      },
+    });
 
     console.log('[ensureWebReadableStream] converted Node Readable to Web ReadableStream');
 

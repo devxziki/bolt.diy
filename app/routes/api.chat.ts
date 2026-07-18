@@ -14,6 +14,7 @@ import { extractPropertiesFromMessage } from '~/lib/.server/llm/utils';
 import type { DesignScheme } from '~/types/design-scheme';
 import { MCPService } from '~/lib/services/mcpService';
 import { StreamRecoveryManager } from '~/lib/.server/llm/stream-recovery';
+import { ensureWebReadableStream } from '~/lib/.server/llm/stream-utils';
 
 export async function action(args: ActionFunctionArgs) {
   return chatAction(args);
@@ -424,7 +425,7 @@ async function chatAction({ context, request }: ActionFunctionArgs) {
       }),
     );
 
-    return new Response(dataStream, {
+    return new Response(ensureWebReadableStream(dataStream, 'OpenCodeZen'), {
       status: 200,
       headers: {
         'Content-Type': 'text/event-stream; charset=utf-8',

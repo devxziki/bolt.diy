@@ -4,6 +4,7 @@ import { stripIndents } from '~/utils/stripIndent';
 import type { ProviderInfo } from '~/types/model';
 import { getApiKeysFromCookie, getProviderSettingsFromCookie } from '~/lib/api/cookies';
 import { createScopedLogger } from '~/utils/logger';
+import { ensureWebReadableStream } from '~/lib/.server/llm/stream-utils';
 
 export async function action(args: ActionFunctionArgs) {
   return enhancerAction(args);
@@ -111,7 +112,7 @@ async function enhancerAction({ context, request }: ActionFunctionArgs) {
     })();
 
     // Return the text stream directly since it's already text data
-    return new Response(result.textStream, {
+    return new Response(ensureWebReadableStream(result.textStream, 'OpenCodeZen'), {
       status: 200,
       headers: {
         'Content-Type': 'text/event-stream',

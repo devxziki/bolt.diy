@@ -69,6 +69,8 @@ export default defineConfig((config) => {
     ],
     envPrefix: [
       'VITE_',
+      'OPENCODE_ZEN_API_BASE_URL',
+      'OPENCODE_ZEN_API_KEY',
       'OPENAI_LIKE_API_BASE_URL',
       'OPENAI_LIKE_API_MODELS',
       'OLLAMA_API_BASE_URL',

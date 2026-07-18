@@ -23,8 +23,8 @@ export interface Shortcuts {
   toggleTerminal: Shortcut;
 }
 
-export const URL_CONFIGURABLE_PROVIDERS = ['Ollama', 'LMStudio', 'OpenAILike'];
-export const LOCAL_PROVIDERS = ['OpenAILike', 'LMStudio', 'Ollama'];
+export const URL_CONFIGURABLE_PROVIDERS = ['OpenCodeZen'];
+export const LOCAL_PROVIDERS: string[] = [];
 
 export type ProviderSetting = Record<string, IProviderConfig>;
 

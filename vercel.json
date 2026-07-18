@@ -7,7 +7,7 @@
   "functions": {
     "api/[[...index]].ts": {
       "maxDuration": 60,
-      "includeFiles": ["build/server/**", "node_modules/.bin/**"]
+      "includeFiles": "build/server/**,node_modules/.bin/**"
     }
   },
   "headers": [

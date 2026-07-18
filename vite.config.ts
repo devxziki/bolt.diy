@@ -30,16 +30,28 @@ export default defineConfig((config) => {
       target: 'esnext',
     },
     plugins: [
-      nodePolyfills({
-        include: ['buffer', 'process', 'util', 'stream'],
-        globals: {
-          Buffer: true,
-          process: true,
-          global: true,
-        },
-        protocolImports: true,
-        exclude: ['child_process', 'fs', 'path'],
-      }),
+      /*
+       * Node polyfills are only needed for the BROWSER/client build, where
+       * `Buffer`/`process`/`global` do not exist. Applying them to the SSR
+       * (server) build is harmful: including `stream` shadows the native
+       * `node:stream` with `stream-browserify` (whose `Readable` has no
+       * `toWeb`), and `protocolImports` injects `web-streams-polyfill`, which
+       * shadows the native `ReadableStream`. That mismatch makes the AI SDK
+       * streaming handler throw "First parameter has member 'readable' that
+       * is not a ReadableStream" on Node 18/20/22 (Vercel/Netlify). The
+       * server runs on real Node and must use the native stream globals.
+       */
+      !config.isSsrBuild &&
+        nodePolyfills({
+          include: ['buffer', 'process', 'util', 'stream'],
+          globals: {
+            Buffer: true,
+            process: true,
+            global: true,
+          },
+          protocolImports: true,
+          exclude: ['child_process', 'fs', 'path'],
+        }),
       {
         name: 'buffer-polyfill',
         transform(code, id) {

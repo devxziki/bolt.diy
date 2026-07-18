@@ -186,7 +186,14 @@ export function getOpenAICompatibleModel(baseURL: string, apiKey: OptionalApiKey
   const provider = createOpenAICompatible({
     name: 'opencode-zen',
     baseURL,
-    apiKey,
+
+    /*
+     * The OpenCode Zen API rejects the `Bearer ` prefix that the AI SDK adds by
+     * default, so we pass a dummy apiKey (to satisfy the SDK's required check)
+     * and set the Authorization header to the raw key ourselves.
+     */
+    apiKey: apiKey ? ' ' : undefined,
+    headers: apiKey ? { Authorization: apiKey } : undefined,
   });
 
   return provider(model);

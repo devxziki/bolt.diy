@@ -2,6 +2,7 @@ import type { LanguageModelV1 } from 'ai';
 import type { ProviderInfo, ProviderConfig, ModelInfo } from './types';
 import type { IProviderSetting } from '~/types/model';
 import { createOpenAI } from '@ai-sdk/openai';
+import { createOpenAICompatible } from '@ai-sdk/openai-compatible';
 import { LLMManager } from './manager';
 
 /** Default timeout for model listing API calls (5 seconds) */
@@ -179,4 +180,14 @@ export function getOpenAILikeModel(baseURL: string, apiKey: OptionalApiKey, mode
   });
 
   return openai(model);
+}
+
+export function getOpenAICompatibleModel(baseURL: string, apiKey: OptionalApiKey, model: string) {
+  const provider = createOpenAICompatible({
+    name: 'opencode-zen',
+    baseURL,
+    apiKey,
+  });
+
+  return provider(model);
 }

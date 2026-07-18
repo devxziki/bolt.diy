@@ -1,4 +1,4 @@
-import { BaseProvider, getOpenAILikeModel } from '~/lib/modules/llm/base-provider';
+import { BaseProvider, getOpenAICompatibleModel } from '~/lib/modules/llm/base-provider';
 import type { ModelInfo } from '~/lib/modules/llm/types';
 import type { IProviderSetting } from '~/types/model';
 import type { LanguageModelV1 } from 'ai';
@@ -74,6 +74,6 @@ export default class OpenCodeZenProvider extends BaseProvider {
 
     const resolvedBaseUrl = (baseUrl || ZEN_BASE_URL).replace(/\/chat\/completions$/, '');
 
-    return getOpenAILikeModel(resolvedBaseUrl, apiKey, model);
+    return getOpenAICompatibleModel(resolvedBaseUrl, apiKey, model);
   }
 }

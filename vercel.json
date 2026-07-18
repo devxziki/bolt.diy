@@ -4,7 +4,7 @@
   "outputDirectory": "build/client",
   "installCommand": "pnpm install --frozen-lockfile",
   "functions": {
-    "api/[[...index]].ts": {
+    "api/[...index].ts": {
       "maxDuration": 60,
       "includeFiles": "build/server/**,node_modules/.bin/**"
     }

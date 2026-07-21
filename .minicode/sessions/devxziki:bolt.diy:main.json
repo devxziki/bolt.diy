@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": 1784631089369,
+  "updatedAt": 1784631157345,
   "sessionBranch": "main",
   "messages": [
     {
@@ -12,6 +12,147 @@
       "role": "assistant",
       "content": "",
       "createdAt": 1784631086537
+    },
+    {
+      "role": "user",
+      "content": "Analyze the full source code and find the bugs if you found any",
+      "createdAt": 1784631133859
+    },
+    {
+      "role": "assistant",
+      "content": null,
+      "createdAt": 1784631136543,
+      "tool_calls": [
+        {
+          "id": "call_00_yhV7rXVKmvb00vthekFY3454",
+          "type": "function",
+          "function": {
+            "name": "read_file",
+            "arguments": "{\"path\": \"/\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "assistant",
+      "content": null,
+      "createdAt": 1784631141090,
+      "tool_calls": [
+        {
+          "id": "call_00_Y7HGCZeG8LIc92gmN87I0277",
+          "type": "function",
+          "function": {
+            "name": "read_file",
+            "arguments": "{\"path\": \"package.json\"}"
+          }
+        },
+        {
+          "id": "call_01_xyZcdzxZdffyINbbOXTW8740",
+          "type": "function",
+          "function": {
+            "name": "read_file",
+            "arguments": "{\"path\": \"README.md\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "assistant",
+      "content": null,
+      "createdAt": 1784631144983,
+      "tool_calls": [
+        {
+          "id": "call_00_bo0py8KN2YMzMh6Wccpo0310",
+          "type": "function",
+          "function": {
+            "name": "read_file",
+            "arguments": "{\"path\": \"app\"}"
+          }
+        },
+        {
+          "id": "call_01_Es5BOzqJcW6TgPMIJjkk7005",
+          "type": "function",
+          "function": {
+            "name": "read_file",
+            "arguments": "{\"path\": \"tsconfig.json\"}"
+          }
+        },
+        {
+          "id": "call_02_a98HDkTlOQTpBFGfxAWq2432",
+          "type": "function",
+          "function": {
+            "name": "read_file",
+            "arguments": "{\"path\": \"vite.config.ts\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "assistant",
+      "content": null,
+      "createdAt": 1784631149532,
+      "tool_calls": [
+        {
+          "id": "call_00_wDCbYy3oI3LfXEcVMFzL5963",
+          "type": "function",
+          "function": {
+            "name": "read_file",
+            "arguments": "{\"path\": \"app/root.tsx\"}"
+          }
+        },
+        {
+          "id": "call_01_NqMs5lnUO1UoNYVbCVZZ6459",
+          "type": "function",
+          "function": {
+            "name": "read_file",
+            "arguments": "{\"path\": \"app/routes\"}"
+          }
+        },
+        {
+          "id": "call_02_R4BAjCvPEOOZ2u7SqmTn1907",
+          "type": "function",
+          "function": {
+            "name": "read_file",
+            "arguments": "{\"path\": \"app/lib\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "assistant",
+      "content": null,
+      "createdAt": 1784631154300,
+      "tool_calls": [
+        {
+          "id": "call_00_Srw8X2R5Nk7auNgW7BBB0402",
+          "type": "function",
+          "function": {
+            "name": "read_file",
+            "arguments": "{\"path\": \"app/lib/stores/theme.ts\"}"
+          }
+        },
+        {
+          "id": "call_01_zUnwI99UJ8IPgAZvMHsV1333",
+          "type": "function",
+          "function": {
+            "name": "read_file",
+            "arguments": "{\"path\": \"app/lib/stores/chat.ts\"}"
+          }
+        },
+        {
+          "id": "call_02_n7ZxQqHBNANKsgvle7UD9665",
+          "type": "function",
+          "function": {
+            "name": "read_file",
+            "arguments": "{\"path\": \"app/lib/stores\"}"
+          }
+        }
+      ]
+    },
+    {
+      "role": "assistant",
+      "content": "Error: Chat API 400: {\"error\":\"Upstream error: 400\",\"detail\":\"{\\\"error\\\":{\\\"message\\\":\\\"Error from provider (Console): Upstream request failed\\\",\\\"type\\\":\\\"invalid_request_error\\\",\\\"param\\\":null,\\\"code\\\":\\\"invalid_request...",
+      "createdAt": 1784631156392
     }
   ]
 }
